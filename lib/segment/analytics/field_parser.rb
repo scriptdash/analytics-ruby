@@ -48,6 +48,21 @@ module Segment
           })
         end
 
+        # In addition to the common fields, alias accepts:
+        #
+        # - "previous_id"
+        def parse_for_alias(fields)
+          common = parse_common_fields(fields)
+
+          previous_id = fields[:previous_id]
+          check_presence!(previous_id, 'previous_id')
+
+          common.merge({
+            :type => 'alias',
+            :previousId => previous_id
+          })
+        end
+
         private
 
         def parse_common_fields(fields)
@@ -83,6 +98,17 @@ module Segment
 
         def add_context!(context)
           context[:library] = { :name => 'analytics-ruby', :version => Segment::Analytics::VERSION.to_s }
+        end
+
+        # private: Ensures that a string is non-empty
+        #
+        # obj    - String|Number that must be non-blank
+        # name   - Name of the validated value
+        #
+        def check_presence!(obj, name)
+          if obj.nil? || (obj.is_a?(String) && obj.empty?)
+            raise ArgumentError, "#{name} must be given"
+          end
         end
       end
     end
