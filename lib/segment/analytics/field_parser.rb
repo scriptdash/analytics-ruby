@@ -85,6 +85,30 @@ module Segment
           })
         end
 
+        # In addition to the common fields, page accepts:
+        #
+        # - "name"
+        # - "properties"
+        def parse_for_page(fields)
+          common = parse_common_fields(fields)
+
+          name = fields[:name]
+          properties = fields[:properties] || {}
+
+          if name.nil? || name.empty?
+            raise ArgumentError, 'Must supply name as a non-empty string'
+          end
+          raise ArgumentError, 'Properties must be a Hash' unless properties.is_a? Hash
+
+          isoify_dates! properties
+
+          common.merge({
+            :type => 'page',
+            :name => name,
+            :properties => properties
+          })
+        end
+
         private
 
         def parse_common_fields(fields)
