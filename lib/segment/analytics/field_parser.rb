@@ -32,6 +32,22 @@ module Segment
           })
         end
 
+        # In addition to the common fields, identify accepts:
+        #
+        # - "traits"
+        def parse_for_identify(fields)
+          common = parse_common_fields(fields)
+
+          traits = fields[:traits] || {}
+          raise ArgumentError, 'Traits must be a Hash' unless traits.is_a? Hash
+          isoify_dates! traits
+
+          common.merge({
+            :type => 'identify',
+            :traits => traits
+          })
+        end
+
         private
 
         def parse_common_fields(fields)
